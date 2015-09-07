@@ -1,0 +1,176 @@
+---
+layout: post
+title: "Final Post"
+author: davidbrough1
+date: 2014-12-12 1:45:22
+---
+
+{% include latex.html %}
+
+# Project Definition
+
+### Description
+
+Our dataset consisted of X-ray scattering intensity images from 12 different 
+samples of polyethylene. While each of the samples were being strain, the 
+stress in the sample was measured and an X-scattering intensity image was 
+taken roughly every four seconds. The twelve samples varied systematically 
+between difference in densities, processing conditions, and thickness. 
+
+![Data Image](https://raw.githubusercontent.com/davidbrough1/ME_8883/master/14943264377_6685b8f7e5_z.jpg)
+
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=rwyDDep-yyg
+" target="_blank"><img src="http://img.youtube.com/vi/rwyDDep-yyg/0.jpg" 
+alt="PE SAXS" width="700" height="525" border="10" /></a>
+
+**Click to see video**
+
+### Dataset
+
+The table below shows the density, thickness and processing condition for 
+the twelve samples.
+
+|Density (gm/cc)|Thickness (µm)|Processing Condition
+|:---:|:---:|:---:|
+|0.912| 20 | A |
+|0.912| 30 | A |
+|0.912| 75 | A |
+|0.912| 20 | B |
+|0.912| 30 | B |
+|0.912| 75 | B |
+|0.923| 20 | A |
+|0.923| 30 | A |
+|0.923| 75 | A |
+|0.923| 20 | B |
+|0.923| 30 | B |
+|0.923| 75 | B |
+
+In this project we worked towards generating structure-processing linkage 
+between the polyethylene samples and the strain applied to each sample.
+
+# Challenges 
+
+A considerable amount of time was spent trying to recover the 2-point 
+statistics from the Small Angle X-ray Scattering (SAXS) images. Although
+we understood the need to take a Fourier transform of the image (a shown
+in [this](http://phelpsforpresident.github.io/MIC-XRD-Polymer/2014/09/17/2-Point-Statistics-and-Xray-Scattering.html)
+post as well as [this](http://phelpsforpresident.github.io/MIC-XRD-Polymer/2014/10/15/Autocorrelation-from-X-ray-Scattering-Data.html)
+ post), we were unclear how to  interpret the physical meaning of 
+these images in real space.
+
+Late in the semester, we were able to meet with [Dr. Garmestani](http://www.mse.gatech.edu/faculty/garmestani) 
+from the Materials Science and Engineering department at Georgia Tech. In 
+[previous](http://dx.doi.org/doi:10.1016/j.actamat.2011.01.013) research
+his group was able to recover pair correlation function  for a 2-phase 
+material from SAXS data. From this information, we were able to [derive](http://nbviewer.ipython.org/github/phelpsforpresident/MIC-XRD-Polymer/blob/gh-pages/notebooks/Relationship_between_XRD_and_Autocorrelation.ipynb) 
+the relationship to get the 2-point statistics from the SAXS images.
+
+$$ f^{11}( \pmb x) = \frac{1}{V \eta_o^2} \int I ( \pmb k) e^{-i\pmb k\pmb x} d\pmb k + V_1^2 $$
+
+Unfortunately because we found this relationship too late in the semester to 
+use the 2-point statistics for the linkage, but we are interested in using 
+the 2-point statistics to do [microstructure reconstruction](dx.doi.org/doi:10.1016/j.actamat.2007.10.044) 
+from the SAXS images in the future.
+
+# Collaboration
+
+[Abhiram](https://github.com/phelpsforpresident) comes from the Materials 
+Science and Engineering department, while [David](https://github.com/davidbrough1) 
+comes from the Computational Science and Engineering department. Abhiram 
+cleaned and selected the dataset for this project as well as contributed to 
+posts and some coding. David coded most of the classes and function used for 
+dimensionality reduction and the processing linkage. He also contributed to 
+posts and worked out derivations. 
+
+We had several conversations with [Dr. Kalidindi](http://www.me.gatech.edu/faculty/kalidindi) 
+that were useful in determining a project direction. We also met with [Dr. Garmestani](http://www.mse.gatech.edu/faculty/garmestani)
+to discuss the relationship between X-ray data and pair correlation functions.
+
+# Trials - Success and Failures
+
+We spent a significant time trying to understand the physical interpretation of 
+the Fourier transform of the SAXS images. We believe we have a good enough 
+understanding to generate the 2-point statistics as this project continues.
+
+Originally PCA was used on the entire X-ray scattering image to do 
+dimensionality reduction. This turned out to be somewhat slow because of the 
+size of the images and because of some of the data structures were initially 
+being used in our code.
+
+Later the [dimeion_reducer](https://github.com/phelpsforpresident/MIC-XRD-Polymer/blob/gh-pages/python_scripts/dimension_reducer.py)
+class was created that would allow for flexibility in selecting a dimensionality 
+reduction technique. This class was designed to integrate well with machine 
+learn python package [scikit-learn](http://scikit-learn.org/stable/).
+
+![Originial Image](https://farm6.staticflickr.com/5591/15083317630_cbdcb13c46_z_d.jpg)
+
+**Original Scattering Image**
+
+After trying several variations on PCA, we found that [kernel PCA](http://scikit-learn.org/stable/auto_examples/decomposition/plot_kernel_pca.html) 
+with a linear kernel gave us the same reduced representation an order of magnitude 
+faster than [PCA](http://scikit-learn.org/stable/auto_examples/decomposition/plot_pca_iris.html). 
+We also explored [sparse PCA](http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.SparsePCA.html) and
+found that is gave similar results to PCA and kernel PCA, but we not as fast as 
+kernel PCA.
+
+Because the signal strength for each image is very low, the log of every pixel was used. 
+In order to account for the variation in X-ray scattering intensity due to sample in thickness,
+we divided each image by the mean intensity.  Before doing PCA, we removed the 
+areas of the images that did not contain scattering from the polyethylene. 
+
+![X-ray Scattering image](https://farm9.staticflickr.com/8628/15799068949_9ff2e93ec5_z_d.jpg)
+
+**Image used in Kernel PCA**
+
+We attempted to use a completely new framework for determining a 
+structure-processing relationship. [Previously](dx.doi.org/doi:10.1016/j.ijplas.2010.03.010)
+a numerical integration approach has been used to construct these linkages. 
+In this project we used a statistical model know as [transfer function model](http://www.le.ac.uk/ec/research/RePEc/lec/leecon/dp11-15.pdf). The transfer function model can be thought of as a method to use regression 
+for digital filter design for time varying signals.
+
+In our case, we found that a model with the order (2, 1, 5) gave us the best 
+result. The 2 represents the number of autoregressive terms in the model, 
+1 represents the number of times the time series were differenced and 5 
+represents the previous time steps used from an exogenous (input) 
+series, in our case we used the measured strain values. Our model equation took the following form.
+
+$$ X_t= a_1 X_{t-1} + a_2 X_{t_2} + b_0 \varepsilon_t + b_1 \varepsilon_{t-1} + 
+b_2 \varepsilon_{t-2} + b_3 \varepsilon_{t-3} + b_4 \varepsilon_{t-4} + 
+b_5 \varepsilon_{t-5} + Err$$
+
+In equation above, $X_t$ is value for a given principle component over time, and 
+$\varepsilon_t$ is the measured strain for the sample. Because the trajectories 
+for the low density samples has different characteristics than the trajectories 
+for the high density samples, we took on sample from each of the and fit the 
+coefficients of our model to them. Below are a few images of the
+predicted processing paths compared to original data.
+
+![Predict 1](https://farm8.staticflickr.com/7530/15819938050_552c6195d9_z_d.jpg)
+![Predict 2](https://farm8.staticflickr.com/7489/15981419186_fb17031049_z_d.jpg)
+
+**Prediction for Low Density Samples**
+
+
+![Predict 3](https://farm9.staticflickr.com/8655/16005230541_d72bc57de2_z_d.jpg)
+![Predict 4](https://farm8.staticflickr.com/7517/15821193499_831bbff413_z_d.jpg)
+
+**Prediction for High Density Samples**
+
+The model performed reasonable well for the low density samples, but do not 
+preform well for the high density samples when the trajectories had 
+discontinuities.
+
+Overall the transfer function model did show some promise as a method to find 
+structure processing linkages. More work will have to be done to explore improvements.
+
+# Conclusion
+
+This project provided a great foundation for continued collaboration with this 
+dataset. A new method to find structure processing linkages was used. 
+In the future we hope to be able to do microstructure reconstruction 
+as well as find a perhaps a better statistical model to predict these 
+trajectories in the low dimensional representation. 
+
+# Final Presentation
+
+<iframe src="//www.slideshare.net/slideshow/embed_code/42769336" width="476" height="400" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe>

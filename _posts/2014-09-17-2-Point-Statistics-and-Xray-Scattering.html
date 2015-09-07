@@ -1,0 +1,64 @@
+---
+layout: post
+title: "2-Point Statistics and X-ray Scattering Data"
+author: davidbrough1
+date: 2014-09-17 12:33:22
+
+markdownify: True
+---
+
+
+# 2-Point Statistics from X-ray Scattering Data
+
+
+### Relationship between X-ray data and 2-point statistics
+In this dataset we have both wide angle X-ray scattering plots (WAXS) and small angle X-ray scattering plots (SAXS).
+The WAXS provides information on the crystal orientation of the crystalline regions, while the SAXS provides
+information of of the orientation of the crystalline regions at a longer length scale.
+
+The autocorrelation of the electron density is inversion Fourier transform of X-ray scattering intensity plot
+(see [derivation](http://nbviewer.ipython.org/github/phelpsforpresident/MIC-XRD-Polymer/blob/gh-pages/notebooks/Relationship_between_XRD_and_Autocorrelation.ipynb)).
+For this project, we will be using the SAXS data and attempt to recover the 2-point statistics for a microstructure
+function with 2 local stats used to describe the crystalline and amorphous regions of the microstrucutre. 
+
+### X-ray Scatter Intensity Plots
+
+<a href="https://www.flickr.com/photos/73249669@N02/15083317630" title="SAXS_001 by Abhiram Kannan, on Flickr"><img src="https://farm6.staticflickr.com/5591/15083317630_cbdcb13c46_z.jpg" width="640" height="640" alt="SAXS_001"></a>
+
+**Originial SAXS X-ray Intensity Plot**
+
+<a href="https://www.flickr.com/photos/73249669@N02/15083260160" title="SAXS by Abhiram Kannan, on Flickr"><img src="https://farm4.staticflickr.com/3918/15083260160_a469fcb334_z.jpg" width="640" height="640" alt="SAXS"></a>
+
+**Scaled SAXS X-ray Intensity Plot**
+
+
+<a href="https://www.flickr.com/photos/73249669@N02/15083290069" title="WAXS_001 by Abhiram Kannan, on Flickr"><img src="https://farm4.staticflickr.com/3864/15083290069_c49eb90326_z.jpg" width="640" height="320" alt="WAXS_001"></a>
+
+**Original WAXS X-ray Intensity Plot**
+
+<a href="https://www.flickr.com/photos/73249669@N02/15083269989" title="WAXS by Abhiram Kannan, on Flickr"><img src="https://farm4.staticflickr.com/3839/15083269989_c25d274745_z.jpg" width="640" height="332" alt="WAXS"></a>
+
+**Scaled WAXS X-ray Intensity Plot**
+[Link to images](https://www.flickr.com/photos/73249669@N02/15083317630/in/photostream/)
+
+### Image Processing
+
+In order to have the inversion Fourier transform be real, the intensity plots need to be symmetric in both the x
+and y directions. In order to protect the detector while collecting data, an beam stop is place to block the X-ray beam
+from reaching the detector (see image below).
+
+![Block Photo](http://dunand.northwestern.edu/research/images/bio/battery-pattern.png)
+
+**This image is not part of the dataset. It is only used to visual describe the image processing that will be need.**
+
+We will be using image processing to remove the line created by the beam stop used to block the beam in order to make
+intensity plots symmetric.
+
+
+Another issue is that intensity plots contain scattering information from both the crystalline and amorphous local
+states. There are tools can be used to deconvolve the amorphous and crystalline contributions such as
+[PySAXS](http://iramis.cea.fr/en/Phocea/Vie_des_labos/Ast/ast_sstechnique.php?id_ast=1799). 
+
+Lastly, the origin of the scatter plots and the edges need to match the expected values related to the volume
+fraction of both the local states. The crystallinity of the polymer can be used to determine this values, and the
+plots will then need to be scaled accordingly.
